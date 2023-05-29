@@ -16,9 +16,10 @@ const LANGUAGES = {
             "page-title": "Welcome to herta kuru~",
             "doc-title": "Kuru Kuru~",
             "page-descriptions": "The website for Herta, the <del>annoying</del> cutest genius Honkai: Star Rail character out there.",
-            "counter-descriptions": "The kuru~ has been squished",
+            //dynamic texts
+            "counter-descriptions": ["The kuru~ has been squished for", "Herta has been kuru~ed for"],
             "counter-unit": "times",
-            "counter-button": "Squish the kuru~!",
+            "counter-button": ["Squish the kuru~!", "Kuru kuru~!"],
             "credits-gif": "Herta gif made by",
             "footer-repository-text": "You can check out the GitHub repository here:",
             "footer-repository-text-2": "herta_kuru repo"
@@ -32,12 +33,12 @@ const LANGUAGES = {
             "audio/cn/转圈圈咯.mp3",
         ],
         texts: {
-            "page-title": "黑塔转圈圈~",
+            "page-title": "黑塔转圈圈",
             "doc-title": "咕噜噜~",
             "page-descriptions": "给黑塔酱写的小网站，对，就是那个<del>烦人的</del>最可爱的《崩坏：星穹铁道》角色！",
-            "counter-descriptions": "黑塔已经咕噜~了",
-            "counter-unit": "次",
-            "counter-button": "转圈圈~",
+            "counter-descriptions": ["黑塔已经咕噜噜~了", "黑塔已经转了"],
+            "counter-unit": ["次", "次圈圈"],
+            "counter-button": ["转圈圈~", "咕噜噜！"],
             "credits-gif": "黑塔GIF作者：",
             "footer-repository-text": "源代码在此：",
             "footer-repository-text-2": "herta_kuru 仓库"
@@ -54,32 +55,54 @@ const LANGUAGES = {
             "page-title": "ヘルタクルへようこそ~",
             "doc-title": "クル クル~",
             "page-descriptions": "このサイトはヘルタのために作られた、 あの崩壊：スターレイルの <del>悩ましい</del> かわいい天才キャラー。",
+            // TODO dynamic texts for Japanese
             "counter-descriptions": "全世界のクル再生数",
             "counter-unit": "回",
             "counter-button": "クル クル~!",
             "credits-gif": "GIF作成者は",
-            "footer-repository-text": "こちはこのページGitHubリポジトリ:",
+            "footer-repository-text": "こちらはこのページGitHubリポジトリ:",
             "footer-repository-text-2": "herta_kuru リポジトリ"
         },
         cardImage: "img/card_ja.jpg"
+    },
+    "kr": {
+        audioList: [
+            "audio/kr/kuruto.mp3",
+            "audio/kr/kuru1.mp3",
+            "audio/kr/kuru2.mp3",
+        ], 
+        texts: {
+            "page-title": "헤르타빙글 환영합니다~",
+            "doc-title": "빙글 빙글~",
+            "page-descriptions": "이 웹사이트는 헤르타를 위해 만들어졌습니다, 붕괴: 스타레일 의 <del>귀찮은</del> 귀여운 천재 ",
+            // TODO dynamic texts for Korean
+            "counter-descriptions": "전 세계 빙글 조회수",
+            "counter-unit": "번",
+            "counter-button": "빙글 빙글~!",
+            "credits-gif": "gif의 제작자입니다",
+            "footer-repository-text": "여기 github 리 포지 토리가 있습니다:",
+            "footer-repository-text-2": "herta_kuru 리 포지 토리"
+        },
+        cardImage: "img/card_kr.jpg"
     }
-    // TODO Korean (text&voice&card) support
 };
+
 var current_language = localStorage.getItem("lang") || "en";
 if (current_language != "en") {
     document.getElementById("language-selector").value = current_language;
-}
+};
+
 function reload_language() {
     let curLang = LANGUAGES[current_language];
     let localTexts = curLang.texts;
     Object.entries(localTexts).forEach(([textId, value]) => {
-        document.getElementById(textId).innerHTML = value;
+        if (!(value instanceof Array))
+            document.getElementById(textId).innerHTML = value;
     });
-    for (const audio of curLang.audioList) {
-        audio.preload = "auto";
-    }
+    refreshDynamicTexts()
     document.getElementById("herta-card").src = curLang.cardImage;
-}
+};
+
 reload_language()
 document.getElementById("language-selector").addEventListener("change", (ev) => {
     current_language = ev.target.value;
@@ -89,7 +112,7 @@ document.getElementById("language-selector").addEventListener("change", (ev) => 
 
 function getLocalAudioList() {
     return LANGUAGES[current_language].audioList;
-}
+};
 //end language support
 
 const getTimestamp = () => Date.parse(new Date());
@@ -127,7 +150,7 @@ function getGlobalCount(duration = null, callback = null) {
             })();
         })
         .catch((err) => console.error(err));
-}
+};
 // initialize counters
 localCounter.textContent = localCount.toLocaleString('en-US');
 
@@ -142,7 +165,8 @@ function updateGlobalCount(first = false) {
     } else {
         setTimeout(updateGlobalCount, 1000);  // check it 1sec later
     }
-}
+};
+
 updateGlobalCount(true);
 
 function update(e, resetCount = true) {
@@ -165,7 +189,7 @@ function update(e, resetCount = true) {
             if (resetCount) heldCount = 0;
         })
         .catch((err) => console.error(err));
-}
+};
 
 let timer;
 
@@ -195,6 +219,7 @@ counterButton.addEventListener('click', (e) => {
 
     playKuru();
     animateHerta();
+    refreshDynamicTexts();
 });
 
 var cachedObjects = {};
@@ -218,11 +243,17 @@ function tryCachedObject(origUrl) {
             });
         return origUrl;
     }
-}
+};
+
+function randomChoice(myArr) {
+    const randomIndex = Math.floor(Math.random() * myArr.length);
+    const randomItem = myArr[randomIndex];
+    return randomItem;
+};
 
 function getRandomAudioUrl() {
     var localAudioList = getLocalAudioList()
-    if (current_language == "en" || current_language == "ja") {
+    if (current_language == "en" || current_language == "ja" || current_language == "kr") {
         const randomIndex = Math.floor(Math.random() * 2) + 1; //kuruto audio only play once at first squish
         const randomItem = localAudioList[randomIndex];
         return randomItem;
@@ -230,7 +261,7 @@ function getRandomAudioUrl() {
     const randomIndex = Math.floor(Math.random() * localAudioList.length);
     const randomItem = localAudioList[randomIndex];
     return randomItem;
-}
+};
 
 function playKuru() {
     let audioUrl;
@@ -249,7 +280,7 @@ function playKuru() {
     audio.addEventListener("ended", function () {
         this.remove();
     });
-}
+};
 
 function animateHerta() {
     let id = null;
@@ -260,7 +291,7 @@ function animateHerta() {
     elem.style.position = "absolute";
     elem.style.right = "-500px";
     elem.style.top = counterButton.getClientRects()[0].bottom + scrollY - 430 + "px"
-    elem.style.zIndex = "-1";
+    elem.style.zIndex = "-10";
     document.body.appendChild(elem);
 
     let pos = -500;
@@ -275,7 +306,7 @@ function animateHerta() {
             elem.style.right = pos + 'px';
         }
     }, 12);
-}
+};
 
 function triggerRipple(e) {
     let ripple = document.createElement("span");
@@ -294,5 +325,14 @@ function triggerRipple(e) {
     setTimeout(() => {
         ripple.remove();
     }, 300);
-}
+};
 //end counter button
+
+function refreshDynamicTexts() {
+    let curLang = LANGUAGES[current_language];
+    let localTexts = curLang.texts;
+    Object.entries(localTexts).forEach(([textId, value]) => {
+        if (value instanceof Array)
+            document.getElementById(textId).innerHTML = randomChoice(value);
+    });
+};
