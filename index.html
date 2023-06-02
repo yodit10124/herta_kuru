@@ -21,15 +21,13 @@
                     <h1 id="page-title">Welcome to herta kuru</h1>
                     <img id="title-img" alt="img of herta" src="img/favicon.ico">
                 </div>
-                <div id="language-selector" class="mdui-hoverable">
-                    <select class="mdui-select">
-                        <option value="en" selected>English</option>
-                        <option value="cn">中文</option>
-                        <option value="ja">日本語</option>
-                        <option value="kr">한국어</option>
-                        <option value="id">Bahasa Indonesia</option>
-                    </select>
-                </div>
+                <select id="language-selector" class="mdui-hoverable">
+                    <option value="en" selected>English</option>
+                    <option value="cn">中文</option>
+                    <option value="ja">日本語</option>
+                    <option value="kr">한국어</option>
+                    <option value="id">Bahasa Indonesia</option>
+                </select>
 
 
 
@@ -64,13 +62,15 @@
             <div id="footer-text">
                 <div class="mdui-list">
                     <a href="javascript:void(0);" class="mdui-list-item mdui-ripple" id="show-credits-opt">
-                        <!-- <i class="mdui-icon mdui-list-item-icon ion-logo-github mdui-text-color-black-icon"></i> -->
-                        <div class="mdui-list-item-content footer-icon-text about-link">Show Credits
+                        <i class="mdui-icon mdui-list-item-icon ion-md-people mdui-text-color-black-icon"></i>
+                        <div class="mdui-list-item-content footer-icon-text about-link" id="show-credits-text">
+                            Show Credits
                         </div>
                     </a>
                     <a href="https://github.com/duiqt/herta.kuru" target="_blank" class="mdui-list-item mdui-ripple">
                         <i class="mdui-icon mdui-list-item-icon ion-logo-github mdui-text-color-black-icon"></i>
-                        <div class="mdui-list-item-content footer-icon-text about-link">GitHub Repo - duiqt/herta_kuru
+                        <div class="mdui-list-item-content footer-icon-text about-link"><span
+                                id="repository-desc">GitHub Repo</span> - duiqt/herta_kuru
                         </div>
                     </a>
                 </div>
